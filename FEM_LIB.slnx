@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="FEM_LIB/FEM_LIB.vcxproj" />
+  <Project Path="FEM_LIB/FEM_LIB.vcxproj" Id="e6f536cb-60d3-442d-afbf-e06512d417ac" />
 </Solution>

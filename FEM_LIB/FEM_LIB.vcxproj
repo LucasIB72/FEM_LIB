@@ -19,7 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="inp_reader.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="mesh.c" />
+    <ClCompile Include="quad4.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="elements.h" />
+    <ClInclude Include="inp_reader.h" />
+    <ClInclude Include="mesh.h" />
+    <ClInclude Include="quad4.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>

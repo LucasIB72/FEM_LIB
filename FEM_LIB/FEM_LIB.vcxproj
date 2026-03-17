@@ -19,13 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="elasticity_2D.c" />
     <ClCompile Include="inp_reader.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mesh.c" />
     <ClCompile Include="quad4.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="elasticity_2D.h" />
     <ClInclude Include="elements.h" />
+    <ClInclude Include="element_routine.h" />
     <ClInclude Include="inp_reader.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="quad4.h" />

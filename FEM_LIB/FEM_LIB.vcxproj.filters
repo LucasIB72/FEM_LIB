@@ -13,33 +13,60 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Arquivos de Cabeçalho\mesh">
+      <UniqueIdentifier>{a002e573-dfaa-461c-86b1-8b952fdeabd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Cabeçalho\elements">
+      <UniqueIdentifier>{4cb84076-38cf-45dc-90b6-84c57e51d871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Cabeçalho\element_routines">
+      <UniqueIdentifier>{1cb1a861-cf17-457f-ab3c-a63d8b53c8ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Cabeçalho\materials">
+      <UniqueIdentifier>{d67ed54d-1c8d-48fe-b7f7-08abf8d9ea19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Cabeçalho\solver">
+      <UniqueIdentifier>{0546c34b-e49b-44b7-9357-46b50d38dee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arquivos de Cabeçalho\io_functions">
+      <UniqueIdentifier>{f702dc26-13d4-4db1-9309-5abc0928dac3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="mesh.c">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
-    <ClCompile Include="quad4.c">
-      <Filter>Arquivos de Origem</Filter>
+      <Filter>Arquivos de Cabeçalho\mesh</Filter>
     </ClCompile>
     <ClCompile Include="inp_reader.c">
-      <Filter>Arquivos de Origem</Filter>
+      <Filter>Arquivos de Cabeçalho\io_functions</Filter>
+    </ClCompile>
+    <ClCompile Include="quad4.c">
+      <Filter>Arquivos de Cabeçalho\elements</Filter>
+    </ClCompile>
+    <ClCompile Include="elasticity_2D.c">
+      <Filter>Arquivos de Cabeçalho\element_routines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mesh.h">
-      <Filter>Arquivos de Cabeçalho</Filter>
+      <Filter>Arquivos de Cabeçalho\mesh</Filter>
     </ClInclude>
     <ClInclude Include="elements.h">
-      <Filter>Arquivos de Cabeçalho</Filter>
+      <Filter>Arquivos de Cabeçalho\elements</Filter>
     </ClInclude>
     <ClInclude Include="quad4.h">
-      <Filter>Arquivos de Cabeçalho</Filter>
+      <Filter>Arquivos de Cabeçalho\elements</Filter>
     </ClInclude>
     <ClInclude Include="inp_reader.h">
-      <Filter>Arquivos de Cabeçalho</Filter>
+      <Filter>Arquivos de Cabeçalho\io_functions</Filter>
+    </ClInclude>
+    <ClInclude Include="element_routine.h">
+      <Filter>Arquivos de Cabeçalho\element_routines</Filter>
+    </ClInclude>
+    <ClInclude Include="elasticity_2D.h">
+      <Filter>Arquivos de Cabeçalho\element_routines</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

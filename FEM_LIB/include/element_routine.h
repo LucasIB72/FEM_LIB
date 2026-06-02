@@ -1,21 +1,10 @@
 #ifndef ELEMENTOROUTINE_H
 #define ELEMENTOROUTINE_H
 
-#include "mesh.h"
 #include "elements.h"
-#include "materials.h"
+#include <stdlib.h>
+#include <math.h>
 
-typedef struct ElementRoutine
-{
-    void (*compute)(
-        double* Ke,
-        double* Re,
-        Mesh* mesh,
-        ElementType* etype,
-        Material* mat,
-        int element_id,
-        double* u);
+void integrate_stiffness_matrix(double* Ke, ElementType* element, const double* node_coords, const double* material_properties);
 
-} ElementRoutine;
-
-#endif 
+#endif

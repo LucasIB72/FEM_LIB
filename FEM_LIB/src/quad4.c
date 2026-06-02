@@ -1,37 +1,42 @@
 #include "quad4.h"
 
-void quad4_shape_functions(double* N, const double* natural_coords)
+void quad4_shape_functions(double* N, const double eta, const double xi)
 {
-    N[0] = 0.25 * (1.0 - natural_coords[0]) * (1.0 - natural_coords[1]);
-    N[1] = 0.25 * (1.0 + natural_coords[2]) * (1.0 - natural_coords[3]);
-    N[2] = 0.25 * (1.0 + natural_coords[4]) * (1.0 + natural_coords[5]);
-    N[3] = 0.25 * (1.0 - natural_coords[6]) * (1.0 + natural_coords[7]);
+    N[0] = 0.25 * (1.0 - xi) * (1.0 - eta);
+    N[1] = 0.25 * (1.0 + xi) * (1.0 - eta);
+    N[2] = 0.25 * (1.0 + xi) * (1.0 + eta);
+    N[3] = 0.25 * (1.0 - xi) * (1.0 + eta);
 }
 
 
+// A função quad4_shape_derivatives calcula as derivadas das funções de forma em relação às coordenadas naturais (xi e eta) para um elemento quadrilateral de 4 nós. As derivadas são armazenadas no array dN, onde as primeiras 4 posições correspondem às derivadas em relação a xi e as próximas 4 posições correspondem às derivadas em relação a eta.
 // dN: derivadas das funções de forma, passadas como referência para a função (o array deve ser alocado antes de chamar a função)
-// natural_coords: coordenadas naturais (xi, eta, chi) do ponto onde as derivadas estão sendo calculadas, passadas como referência para a função, apenas como leitura (const)
-void quad4_shape_derivatives(double* dN, const double* natural_coords)
+// eta e xi: coordenadas naturais, passadas como referência para a função.
+void quad4_shape_derivatives(double* dN, const double eta, const double xi)
 {
-    dN[0] = -0.25 * (1.0 - eta);
-    dN[4] = -0.25 * (1.0 - xi);
+    // Derivadas da função de forma N_1
+	dN[0] = -0.25 * (1.0 - eta); //dN_1/dxi
+	dN[1] = -0.25 * (1.0 - xi); //dN_1/deta
 
-    dN[1] = 0.25 * (1.0 - eta);
-    dN[5] = -0.25 * (1.0 + xi);
+    // Derivadas da função de forma N_2
+	dN[2] = 0.25 * (1.0 - eta); //dN_2/dxi
+	dN[3] = -0.25 * (1.0 + xi); //dN_2/deta
 
-    dN[2] = 0.25 * (1.0 + eta);
-    dN[6] = 0.25 * (1.0 + xi);
+    // Derivadas da função de forma N_3
+	dN[4] = 0.25 * (1.0 + eta); //dN_3/dxi
+	dN[5] = 0.25 * (1.0 + xi); //dN_3/deta
 
-    dN[3] = -0.25 * (1.0 + eta);
-    dN[7] = 0.25 * (1.0 - xi);
+    // Derivadas da função de forma N_4
+	dN[6] = -0.25 * (1.0 + eta); //dN_4/dxi
+	dN[7] = 0.25 * (1.0 - xi); //dN_4/deta
 }
 
 void quad4_gauss_points(double* gp_w)
 {
-	gp_w[0] = -0.5773502691896257; gp_w[4] = -0.5773502691896257; gp_w[8] = 1.0;
-	gp_w[1] = 0.5773502691896257; gp_w[5] = -0.5773502691896257; gp_w[9] = 1.0;        
-	gp_w[2] = 0.5773502691896257; gp_w[6] = 0.5773502691896257; gp_w[10] = 1.0; 
-	gp_w[3] = -0.5773502691896257; gp_w[7] = 0.5773502691896257; gp_w[11] = 1.0;    
+	gp_w[0] = -0.5773502691896257; gp_w[1] = -0.5773502691896257; gp_w[2] = 1.0;
+	gp_w[3] = 0.5773502691896257; gp_w[4] = -0.5773502691896257; gp_w[5] = 1.0;        
+	gp_w[6] = 0.5773502691896257; gp_w[7] = 0.5773502691896257; gp_w[8] = 1.0; 
+	gp_w[9] = -0.5773502691896257; gp_w[10] = 0.5773502691896257; gp_w[11] = 1.0;    
 }
 
 ElementType create_quad4_element()

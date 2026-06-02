@@ -56,7 +56,7 @@
     <ClCompile Include="src\elasticity_2D.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="src\elements.c">
+    <ClCompile Include="src\element_routine.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="src\inp_reader.c">

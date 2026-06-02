@@ -17,6 +17,7 @@ typedef struct ElementType
     
     void (*shape_functions)(double* N, const double* xi);/**< É um ponteiro para uma função que calcula as funções de forma (shape functions) para um elemento finito. */
     void (*shape_derivatives)(double* dN, const double* xi);/**< É um ponteiro para um array onde as funções de forma calculadas serão armazenadas. */
+	void (*gauss_points)(double* gp_w);/**< É um ponteiro para uma função que calcula os pontos de Gauss e seus pesos para um elemento finito. */
     
 
 } ElementType;

@@ -1,0 +1,24 @@
+\doxysection{elements.\+h}
+\hypertarget{elements_8h_source}{}\label{elements_8h_source}\index{C:/Users/lucas/source/repos/FEM\_LIB/FEM\_LIB/include/elements.h@{C:/Users/lucas/source/repos/FEM\_LIB/FEM\_LIB/include/elements.h}}
+\doxymbox{\hyperlink{elements_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ ELEMENTS\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ ELEMENTS\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_element_type}{ElementType}}}
+\DoxyCodeLine{00015\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_element_type_ae9cf8ead5ab2d1a367dc47998a25dd24}{dim}};}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_element_type_a1b9e871c9de2e5a3a266c21d63e8ff60}{nodes}};}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_element_type_a81035c170e5bc79afea8c92eeccb1899}{dof\_per\_node}};}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_element_type_adcc8dceed66c4f7eeb43eed18f15728d}{n\_gauss}};}
+\DoxyCodeLine{00020\ \ \ \ \ }
+\DoxyCodeLine{00021\ \ \ \ \ void\ (*\doxymbox{\hyperlink{struct_element_type_af9829d2fd2e788921653df4346e43359}{shape\_functions}})(\textcolor{keywordtype}{double}*\ N,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ xi);}
+\DoxyCodeLine{00022\ \ \ \ \ void\ (*\doxymbox{\hyperlink{struct_element_type_a6ab8abaee7593c0dfe16684333d8c287}{shape\_derivatives}})(\textcolor{keywordtype}{double}*\ dN,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ xi);}
+\DoxyCodeLine{00023\ \ \ \ \ void\ (*\doxymbox{\hyperlink{struct_element_type_a7d0a7b765cff596dd696637786f15915}{gauss\_points}})(\textcolor{keywordtype}{double}*\ gp\_w);}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \}\ \doxymbox{\hyperlink{struct_element_type}{ElementType}};}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

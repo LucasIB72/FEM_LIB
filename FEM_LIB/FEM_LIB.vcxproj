@@ -19,19 +19,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="elasticity_2D.c" />
-    <ClCompile Include="inp_reader.c" />
-    <ClCompile Include="main.c" />
-    <ClCompile Include="mesh.c" />
-    <ClCompile Include="quad4.c" />
+    <ClInclude Include="include\elasticity_2D.h" />
+    <ClInclude Include="include\elements.h" />
+    <ClInclude Include="include\element_routine.h" />
+    <ClInclude Include="include\inp_reader.h" />
+    <ClInclude Include="include\mesh.h" />
+    <ClInclude Include="include\quad4.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="elasticity_2D.h" />
-    <ClInclude Include="elements.h" />
-    <ClInclude Include="element_routine.h" />
-    <ClInclude Include="inp_reader.h" />
-    <ClInclude Include="mesh.h" />
-    <ClInclude Include="quad4.h" />
+    <ClCompile Include="src\elasticity_2D.c" />
+    <ClCompile Include="src\elements.c" />
+    <ClCompile Include="src\inp_reader.c" />
+    <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\mesh.c" />
+    <ClCompile Include="src\quad4.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
@@ -85,6 +86,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\lucas\source\repos\FEM_LIB\FEM_LIB\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>

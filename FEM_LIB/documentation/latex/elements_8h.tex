@@ -1,0 +1,44 @@
+\doxysection{C:\+/\+\+Users/\+lucas/\+source/\+repos/\+\+FEM\+\_\+\+LIB/\+\+FEM\+\_\+\+LIB/\+include/\+elements.h File Reference}
+\hypertarget{elements_8h}{}\label{elements_8h}\index{C:/Users/lucas/source/repos/FEM\_LIB/FEM\_LIB/include/elements.h@{C:/Users/lucas/source/repos/FEM\_LIB/FEM\_LIB/include/elements.h}}
+
+
+Define a estrutura \doxylink{struct_element_type}{Element\+Type}, que representa um tipo de elemento finito.  
+
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_element_type}{Element\+Type}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct Element\+Type \doxymbox{\hyperlink{elements_8h_a0753d29e06f939a47d7a9abbb6b90bec}{Element\+Type}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Define a estrutura \doxylink{struct_element_type}{Element\+Type}, que representa um tipo de elemento finito. 
+
+A estrutura \doxylink{struct_element_type}{Element\+Type} contém informações sobre o tipo de elemento, como a dimensão, o número de nós, os graus de liberdade por nó, o número de pontos de Gauss e ponteiros para funções que calculam as funções de forma, suas derivadas e os pontos de Gauss. \doxylink{struct_element_type}{Element\+Type} contém o que é genérico de todos os tipos de elemento, e vai instanciar elementos específicos (ex:\+ quad4). Portanto o sourcecode .c de cada tipo de elemento (ex:\+ \doxylink{quad4_8c}{quad4.\+c}) vai possuir uma função que retorna um \doxylink{struct_element_type}{Element\+Type} preenchido com as informações específicas daquele tipo de elemento.
+
+
+\begin{DoxyParams}{Parameters}
+{\em shape\+\_\+functions} & É um ponteiro para uma função que calcula as funções de forma (shape functions) para um elemento finito. \\
+\hline
+{\em N} & É um ponteiro para um array onde as funções de forma calculadas serão armazenadas. \\
+\hline
+{\em xi} & É um vetor de coordenadas naturais usado para calcular as funções de forma em um ponto específico dentro do elemento. \\
+\hline
+\end{DoxyParams}
+
+
+\label{elements_8h_doc-typedef-members}
+\Hypertarget{elements_8h_doc-typedef-members}
+\doxysubsection{Typedef Documentation}
+\Hypertarget{elements_8h_a0753d29e06f939a47d7a9abbb6b90bec}\index{elements.h@{elements.h}!ElementType@{ElementType}}
+\index{ElementType@{ElementType}!elements.h@{elements.h}}
+\doxysubsubsection{\texorpdfstring{ElementType}{ElementType}}
+{\footnotesize\ttfamily \label{elements_8h_a0753d29e06f939a47d7a9abbb6b90bec} 
+typedef struct Element\+Type Element\+Type}
+

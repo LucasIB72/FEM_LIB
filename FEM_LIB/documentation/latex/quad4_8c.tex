@@ -1,0 +1,43 @@
+\doxysection{C:\+/\+\+Users/\+lucas/\+source/\+repos/\+\+FEM\+\_\+\+LIB/\+\+FEM\+\_\+\+LIB/\+src/\+quad4.c File Reference}
+\hypertarget{quad4_8c}{}\label{quad4_8c}\index{C:/Users/lucas/source/repos/FEM\_LIB/FEM\_LIB/src/quad4.c@{C:/Users/lucas/source/repos/FEM\_LIB/FEM\_LIB/src/quad4.c}}
+{\ttfamily \+\#include "{}quad4.\+h"{}}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{quad4_8c_ab51df073f07ca8b1d7cc722df1c140ca}{quad4\+\_\+shape\+\_\+functions}} (double \texorpdfstring{$\ast$}{*}N, double xi, double eta)
+\item 
+void \doxymbox{\hyperlink{quad4_8c_a0cc699e640cff2e0729c87e22ebd7980}{quad4\+\_\+shape\+\_\+derivatives}} (double \texorpdfstring{$\ast$}{*}dN, double xi, double eta)
+\item 
+void \doxymbox{\hyperlink{quad4_8c_a882f3a42bc29dc48881d8a8754979786}{quad4\+\_\+gauss\+\_\+points}} (double \texorpdfstring{$\ast$}{*}gp\+\_\+w)
+\item 
+\doxymbox{\hyperlink{struct_element_type}{Element\+Type}} \doxymbox{\hyperlink{quad4_8c_a76915da4b5edabe8706e88884d6bd1ee}{create\+\_\+quad4\+\_\+element}} ()
+\end{DoxyCompactItemize}
+
+
+\label{quad4_8c_doc-func-members}
+\Hypertarget{quad4_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{quad4_8c_a76915da4b5edabe8706e88884d6bd1ee}\index{quad4.c@{quad4.c}!create\_quad4\_element@{create\_quad4\_element}}
+\index{create\_quad4\_element@{create\_quad4\_element}!quad4.c@{quad4.c}}
+\doxysubsubsection{\texorpdfstring{create\_quad4\_element()}{create\_quad4\_element()}}
+{\footnotesize\ttfamily \label{quad4_8c_a76915da4b5edabe8706e88884d6bd1ee} 
+\doxymbox{\hyperlink{struct_element_type}{Element\+Type}} create\+\_\+quad4\+\_\+element (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{quad4_8c_a882f3a42bc29dc48881d8a8754979786}\index{quad4.c@{quad4.c}!quad4\_gauss\_points@{quad4\_gauss\_points}}
+\index{quad4\_gauss\_points@{quad4\_gauss\_points}!quad4.c@{quad4.c}}
+\doxysubsubsection{\texorpdfstring{quad4\_gauss\_points()}{quad4\_gauss\_points()}}
+{\footnotesize\ttfamily \label{quad4_8c_a882f3a42bc29dc48881d8a8754979786} 
+void quad4\+\_\+gauss\+\_\+points (\begin{DoxyParamCaption}\item[{double \texorpdfstring{$\ast$}{*}}]{gp\+\_\+w}{}\end{DoxyParamCaption})}
+
+\Hypertarget{quad4_8c_a0cc699e640cff2e0729c87e22ebd7980}\index{quad4.c@{quad4.c}!quad4\_shape\_derivatives@{quad4\_shape\_derivatives}}
+\index{quad4\_shape\_derivatives@{quad4\_shape\_derivatives}!quad4.c@{quad4.c}}
+\doxysubsubsection{\texorpdfstring{quad4\_shape\_derivatives()}{quad4\_shape\_derivatives()}}
+{\footnotesize\ttfamily \label{quad4_8c_a0cc699e640cff2e0729c87e22ebd7980} 
+void quad4\+\_\+shape\+\_\+derivatives (\begin{DoxyParamCaption}\item[{double \texorpdfstring{$\ast$}{*}}]{dN}{, }\item[{double}]{xi}{, }\item[{double}]{eta}{}\end{DoxyParamCaption})}
+
+\Hypertarget{quad4_8c_ab51df073f07ca8b1d7cc722df1c140ca}\index{quad4.c@{quad4.c}!quad4\_shape\_functions@{quad4\_shape\_functions}}
+\index{quad4\_shape\_functions@{quad4\_shape\_functions}!quad4.c@{quad4.c}}
+\doxysubsubsection{\texorpdfstring{quad4\_shape\_functions()}{quad4\_shape\_functions()}}
+{\footnotesize\ttfamily \label{quad4_8c_ab51df073f07ca8b1d7cc722df1c140ca} 
+void quad4\+\_\+shape\+\_\+functions (\begin{DoxyParamCaption}\item[{double \texorpdfstring{$\ast$}{*}}]{N}{, }\item[{double}]{xi}{, }\item[{double}]{eta}{}\end{DoxyParamCaption})}
+

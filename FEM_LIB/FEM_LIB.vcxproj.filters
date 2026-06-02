@@ -33,40 +33,43 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.c">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
-    <ClCompile Include="mesh.c">
-      <Filter>Arquivos de Cabeçalho\mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="inp_reader.c">
-      <Filter>Arquivos de Cabeçalho\io_functions</Filter>
-    </ClCompile>
-    <ClCompile Include="quad4.c">
-      <Filter>Arquivos de Cabeçalho\elements</Filter>
-    </ClCompile>
-    <ClCompile Include="elasticity_2D.c">
-      <Filter>Arquivos de Cabeçalho\element_routines</Filter>
-    </ClCompile>
+    <ClInclude Include="include\elasticity_2D.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="include\element_routine.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="include\elements.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="include\inp_reader.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mesh.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="include\quad4.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mesh.h">
-      <Filter>Arquivos de Cabeçalho\mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="elements.h">
-      <Filter>Arquivos de Cabeçalho\elements</Filter>
-    </ClInclude>
-    <ClInclude Include="quad4.h">
-      <Filter>Arquivos de Cabeçalho\elements</Filter>
-    </ClInclude>
-    <ClInclude Include="inp_reader.h">
-      <Filter>Arquivos de Cabeçalho\io_functions</Filter>
-    </ClInclude>
-    <ClInclude Include="element_routine.h">
-      <Filter>Arquivos de Cabeçalho\element_routines</Filter>
-    </ClInclude>
-    <ClInclude Include="elasticity_2D.h">
-      <Filter>Arquivos de Cabeçalho\element_routines</Filter>
-    </ClInclude>
+    <ClCompile Include="src\elasticity_2D.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\elements.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\inp_reader.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mesh.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\quad4.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

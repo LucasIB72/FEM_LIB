@@ -1,0 +1,32 @@
+\doxysection{mesh.\+h}
+\hypertarget{mesh_8h_source}{}\label{mesh_8h_source}\index{C:/Users/lucas/source/repos/FEM\_LIB/FEM\_LIB/include/mesh.h@{C:/Users/lucas/source/repos/FEM\_LIB/FEM\_LIB/include/mesh.h}}
+\doxymbox{\hyperlink{mesh_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_mesh}{Mesh}}}
+\DoxyCodeLine{00003\ \{}
+\DoxyCodeLine{00004\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_mesh_a70b1e7ecce7eb9f6dc1a79ca1fa3d3b8}{dim}};}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_mesh_a3f1c54204d73364f0b74186695645556}{n\_nodes}};}
+\DoxyCodeLine{00007\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_mesh_a91f539ed52ea3d6b68b3f5c8c4c5632b}{n\_elements}};}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_mesh_a05687891e4a3c40a7855efa2b1e2f303}{nodes\_per\_element}};}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_mesh_ac4f9b6c67df49c6d7b2f2629a04f89cc}{dof\_per\_node}};}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{struct_mesh_a65b2abc6186f97c31a98053de4c0c7bb}{total\_dofs}};}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{double}*\ \doxymbox{\hyperlink{struct_mesh_a4c8dc256eb6050823655059a4cc0b9a5}{coords}};\ \ \ \ \ \ \ \ \textcolor{comment}{//\ [n\_nodes\ *\ dim]}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{int}*\ \doxymbox{\hyperlink{struct_mesh_acbd3d0c1ddca6b21d4f30c51459b42c0}{connectivity}};\ \ \ \ \ \textcolor{comment}{//\ [n\_elements\ *\ nodes\_per\_element]}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \}\ \doxymbox{\hyperlink{struct_mesh}{Mesh}};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{mesh_8h_ad0845ff4b274bc3bec52b8548ad3295d}{mesh\_init}}(\doxymbox{\hyperlink{struct_mesh}{Mesh}}*\ mesh);}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{mesh_8h_a3b1bfbbdc73a9ac0e81152f60a0ddb00}{mesh\_allocate}}(\doxymbox{\hyperlink{struct_mesh}{Mesh}}*\ mesh);}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{mesh_8h_afc3f1fad90245cdad28301ad49a2c571}{mesh\_free}}(\doxymbox{\hyperlink{struct_mesh}{Mesh}}*\ mesh);}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{mesh_8h_adf6f178eb9fe93e584de7ff5c5759661}{mesh\_print\_info}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_mesh}{Mesh}}*\ mesh);}
+
+\end{DoxyCode}

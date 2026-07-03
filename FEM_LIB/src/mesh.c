@@ -20,17 +20,13 @@ void mesh_init(Mesh* mesh)
 
 void mesh_allocate(Mesh* mesh)
 {
+    //Aloca a memoria do vetor de coordenadas
+    mesh->coords = malloc(mesh->n_nodes * mesh->dim * sizeof(double));
 
-    mesh->coords = malloc(
-        mesh->n_nodes * mesh->dim * sizeof(double)
-    );
+	//Aloca a memoria do vetor de conectividades
+    mesh->connectivity = malloc(mesh->n_elements * mesh->nodes_per_element * sizeof(int));
 
-    mesh->connectivity = malloc(
-        mesh->n_elements *
-        mesh->nodes_per_element *
-        sizeof(int)
-    );
-
+	//Verifica se a alocacao foi bem sucedida
     if (mesh->coords == NULL || mesh->connectivity == NULL)
     {
         printf("Mesh allocation failed\n");

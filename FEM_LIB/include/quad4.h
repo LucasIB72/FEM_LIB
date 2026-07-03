@@ -3,9 +3,9 @@
 
 #include "elements.h"
 
-void quad4_shape_functions(double* N, const double xi, const double eta);
+void quad4_shape_functions(double* N, const double* xi);
 
-void quad4_shape_derivatives(double* dN, const double xi, const double eta);
+void quad4_shape_derivatives(double* dN, const double* xi);
 
 void quad4_gauss_points(double* gp_w);
 

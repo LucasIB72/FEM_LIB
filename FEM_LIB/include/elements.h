@@ -13,11 +13,12 @@ typedef struct ElementType
     int nodes;
     int dof_per_node;
     int n_gauss;
-    const double* gauss_points;/**< É um ponteiro que aponta para um array que contém os pesos para cada ponto de Gauss do elemento. */
-    
-    void (*shape_functions)(double* N, const double* xi);/**< É um ponteiro para uma função que calcula as funções de forma (shape functions) para um elemento finito. */
-    void (*shape_derivatives)(double* dN, const double* xi);/**< É um ponteiro para um array onde as funções de forma calculadas serão armazenadas. */
-	void (*gauss_points)(double* gp_w);/**< É um ponteiro para uma função que calcula os pontos de Gauss e seus pesos para um elemento finito. */
+    //Apontam para funcoes de forma de um elemento específico (ex: QUAD4)
+    void (*shape_functions)(double* N, const double* xi);/**< É um ponteiro para uma função do elemento que calcula as funções de forma (shape functions) para um elemento finito. */
+    void (*shape_derivatives)(double* dN, const double* xi);/**< É um ponteiro para uma função do elemento que calcula as derivadas das funções de forma para um elemento finito. */
+	void (*gauss_points)(double* gp_w);/**< É um ponteiro para uma função do elemento que calcula os pontos de Gauss e seus pesos para um elemento finito. */
+	//Aponta para uma física específica (ex: Elasticidade 2D)
+    void (*integrate_physics)(double* Ke, double* Re, const double* dN_global, double detJ, double w, const double* material_properties, int n_nodes, int n_dim, int ndof, const double* u_e); /**< É um ponteiro para uma função da física escolhida, que calcula a parte física da integração das matrizes do elemento */
     
 
 } ElementType;

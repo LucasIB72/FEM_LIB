@@ -52,7 +52,7 @@ ElementType create_quad4_element()
 
     e.dim = 2;
     e.nodes = 4;
-    e.dof_per_node = 2;
+    //e.dof_per_node = 2; // Movido para PhysicsModel
     e.n_gauss = 4;
 
     e.shape_functions = quad4_shape_functions;

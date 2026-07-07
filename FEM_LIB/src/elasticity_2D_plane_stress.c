@@ -1,7 +1,7 @@
-#include "elasticity_2D.h"
+#include "elasticity_2D_plane_stress.h"
 #include <stdlib.h>
 
-void elasticity_2d_integrate(
+void elasticity_2d_plane_stress_integrate(
     double* Ke, double* Re,
     const double* dN_global,
     double detJ, double w,
@@ -79,62 +79,4 @@ void elasticity_2d_integrate(
 
     free(K);
     free(B_data);
-}
-
-void element_routine_e2d(
-    double* Ke, double* Re,
-    Mesh* mesh,
-    ElementType* etype,
-    Material* mat,
-    int e,
-    const double* u)
-{
-    int n_nodes = etype->nodes;
-    int n_dim = etype->dim;
-    int ndof = n_nodes * etype->dof_per_node;
-
-    double* node_coords = malloc(n_nodes * 3 * sizeof(double));
-    double* u_e = NULL;
-    double material_properties[2] = { mat->E, mat->nu };
-
-    if (u)
-    {
-        u_e = malloc(ndof * sizeof(double));
-        if (!u_e)
-        {
-            free(node_coords);
-            return;
-        }
-    }
-
-    if (!node_coords)
-    {
-        free(u_e);
-        return;
-    }
-
-    for (int j = 0; j < n_nodes; j++)
-    {
-		//Pega a posicao no vetor de conectividades respectivo ao inicio do elemento "e" para identificar o no "j" do elemento
-        int node_id = mesh->connectivity[e * mesh->nodes_per_element + j];
-
-		//pega a coordenada do no "j" do elemento "e" e armazena no vetor de coordenadas do elemento
-        node_coords[j * 3 + 0] = mesh->coords[node_id * 3 + 0];
-        node_coords[j * 3 + 1] = mesh->coords[node_id * 3 + 1];
-        node_coords[j * 3 + 2] = mesh->coords[node_id * 3 + 2];
-
-        if (u)
-        {
-            u_e[j * etype->dof_per_node + 0] = u[node_id * mesh->dof_per_node + 0];
-            u_e[j * etype->dof_per_node + 1] = u[node_id * mesh->dof_per_node + 1];
-        }
-    }
-
-	//Seleciona a funcao de integracao do elemento de acordo com o tipo de elemento
-    etype->integrate_physics = elasticity_2d_integrate;
-
-    integrate_stiffness_matrix(Ke, Re, etype, node_coords, material_properties, u_e);
-
-    free(u_e);
-    free(node_coords);
 }

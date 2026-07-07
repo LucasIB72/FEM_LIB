@@ -1,7 +1,7 @@
-#pragma once
-#include "mesh.h"
 #ifndef INP_READER_H
 #define INP_READER_H
+
+#include "mesh.h"
 
 
 int read_inp_mesh(const char* filename,

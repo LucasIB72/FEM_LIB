@@ -20,8 +20,8 @@ void mesh_init(Mesh* mesh)
 
 void mesh_allocate(Mesh* mesh)
 {
-    //Aloca a memoria do vetor de coordenadas
-    mesh->coords = malloc(mesh->n_nodes * mesh->dim * sizeof(double));
+    //Aloca a memoria do vetor de coordenadas (stride 3: x, y, z mesmo em 2D)
+    mesh->coords = malloc(mesh->n_nodes * 3 * sizeof(double));
 
 	//Aloca a memoria do vetor de conectividades
     mesh->connectivity = malloc(mesh->n_elements * mesh->nodes_per_element * sizeof(int));

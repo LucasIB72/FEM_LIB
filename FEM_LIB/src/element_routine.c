@@ -3,15 +3,47 @@
 #include <stdlib.h>
 #include <math.h>
 
-// A funcao calcula a matriz de rigidez do elemento (Ke). Contudo aqui esta declarada apenas a parte geometrica da integracao, ou seja, 
-// a parte que calcula as derivadas das funcoes de forma em relacao as coordenadas globais e a matriz Jacobiana. A parte fisica da integracao
-// (que depende do tipo de elemento) deve ser implementada na funcao integrate_physics do ElementType.
-void integrate_stiffness_matrix(double* Ke, double* Re, ElementType* element, const double* node_coords, const double* material_properties, const double* u_e)
+// A funcao calcula a matriz de rigidez do elemento (Ke). Primeiro extrai as coordenadas nodais e, 
+// se houver, os deslocamentos do elemento a partir do mesh. Em seguida processa a parte geometrica 
+// da integracao (derivadas, Jacobiano) e delega a parte fisica para physics->integrate.
+void integrate_stiffness_matrix(double* Ke, double* Re, ElementType* element, PhysicsModel* physics, Mesh* mesh, int e, const double* material_properties, const double* u)
 {
     int n_nodes = element->nodes;
     int n_gp = element->n_gauss;
 	int n_dim = element->dim;
-    int ndof = n_nodes * element->dof_per_node;
+    int ndof = n_nodes * physics->dof_per_node;
+
+    // Extrai as coordenadas nodais do elemento "e" a partir do mesh
+    double* node_coords = malloc(n_nodes * 3 * sizeof(double));
+    if (!node_coords) return;
+
+    for (int j = 0; j < n_nodes; j++)
+    {
+        int node_id = mesh->connectivity[e * mesh->nodes_per_element + j];
+        node_coords[j * 3 + 0] = mesh->coords[node_id * 3 + 0];
+        node_coords[j * 3 + 1] = mesh->coords[node_id * 3 + 1];
+        node_coords[j * 3 + 2] = mesh->coords[node_id * 3 + 2];
+    }
+
+	// Extrai o vetor de deslocamentos do elemento "e" a partir do vetor global "u" (se tiver sido calculado antes)
+    double* u_e = NULL;
+    if (u)
+    {
+        u_e = malloc(ndof * sizeof(double));
+        if (!u_e) { free(node_coords); return; }
+    }
+    if (u)
+    {
+        for (int j = 0; j < n_nodes; j++)
+        {
+            int node_id = mesh->connectivity[e * mesh->nodes_per_element + j];
+            for (int d = 0; d < physics->dof_per_node; d++)
+            {
+                u_e[j * physics->dof_per_node + d] = u[node_id * physics->dof_per_node + d];
+            }
+        }
+    }
+        
 
 	// Aloca memoria para as derivadas das funcoes de forma e os pontos de Gauss com pesos
     double* dN = malloc(n_dim * n_nodes * sizeof(double));
@@ -20,9 +52,10 @@ void integrate_stiffness_matrix(double* Ke, double* Re, ElementType* element, co
     double* xi_arr = malloc(n_dim * sizeof(double));
 
     // Procura erro de alocacao
-    // if (!dN || !gp_w)
     if (!dN || !gp_w || !dN_global || !xi_arr)
     {
+        free(u_e);
+        free(node_coords);
         free(dN);
         free(gp_w);
         free(dN_global);
@@ -52,15 +85,15 @@ void integrate_stiffness_matrix(double* Ke, double* Re, ElementType* element, co
         element->shape_derivatives(dN, xi_arr);
 
 		// Calcula a matriz Jacobiana J = {{dx/dxi, dx/deta, dx/dzeta}, {dy/dxi, dy/deta, dy/dzeta}, {dz/dxi, dz/deta, dz/dzeta}}
-        double* J = calloc(n_dim * n_dim, sizeof(double));
-        for (int j = 0; j < n_dim; j++)       // coordenada espacial (x, y, z)
-            for (int i = 0; i < n_dim; i++)           // direcao da derivada natural (xi, eta, zeta)
-                for (int k = 0; k < n_nodes; k++) // no
+        double J[9] = {0.0};
+        for (int j = 0; j < n_dim; j++)
+            for (int i = 0; i < n_dim; i++)
+                for (int k = 0; k < n_nodes; k++)
                     J[i * n_dim + j] += dN[k * n_dim + i] * node_coords[k * 3 + j];
 
         // Calcula o determinante da matriz Jacobiana e sua inversa J_inv.
         double detJ;
-        double* J_inv = malloc(n_dim * n_dim * sizeof(double));
+        double J_inv[9];
         if (n_dim == 2)
         {
             detJ = J[0] * J[3] - J[1] * J[2];
@@ -101,13 +134,12 @@ void integrate_stiffness_matrix(double* Ke, double* Re, ElementType* element, co
 		}
 
         // Chama a funcao de integracao fisica especifica do elemento
-        if (element->integrate_physics)
-            element->integrate_physics(Ke, Re, dN_global, detJ, w, material_properties, n_nodes, n_dim, ndof, u_e);
-
-        free(J_inv);
-        free(J);
+        if (physics && physics->integrate)
+            physics->integrate(Ke, Re, dN_global, detJ, w, material_properties, n_nodes, n_dim, ndof, u_e);
     }
 
+    free(u_e);
+    free(node_coords);
     free(xi_arr);
     free(dN);
     free(gp_w);

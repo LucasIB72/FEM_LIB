@@ -426,3 +426,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Executavel compilado do FEM_LIB
+FEM_LIB/fem_lib.exe

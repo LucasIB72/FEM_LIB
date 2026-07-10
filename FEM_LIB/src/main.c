@@ -1,7 +1,9 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <io.h>
 #include "mesh.h"
 #include "elements.h"
 #include "quad4.h"
@@ -188,23 +190,36 @@ int main(void)
     write_vtk("resultado.vtk", &mesh, u);
     printf("\nResultado exportado para resultado.vtk\n");
 
-    /* 12. Abre ParaView automaticamente */
+    /* 12. Abre ParaView automaticamente com visualizacao */
     {
-        const char* cmds[] = {
-            "where paraview >nul 2>nul && start /B paraview resultado.vtk",
-            "if exist \"C:\\Program Files\\ParaView\\bin\\paraview.exe\" start /B \"\" \"C:\\Program Files\\ParaView\\bin\\paraview\" resultado.vtk",
-            "if exist \"C:\\Program Files\\ParaView 5.11.0\\bin\\paraview.exe\" start /B \"\" \"C:\\Program Files\\ParaView 5.11.0\\bin\\paraview\" resultado.vtk",
-            "if exist \"C:\\Program Files\\ParaView 5.10.0\\bin\\paraview.exe\" start /B \"\" \"C:\\Program Files\\ParaView 5.10.0\\bin\\paraview\" resultado.vtk",
-        };
+        printf("Abrindo ParaView...\n");
+        char cmd_pv[1024];
         int launched = 0;
-        for (int i = 0; i < 4 && !launched; i++)
-            if (system(cmds[i]) == 0) launched = 1;
+
+        const char* pv_paths[] = {
+            "C:\\Program Files\\ParaView\\bin\\paraview.exe",
+            "C:\\Program Files\\ParaView 6.1.1\\bin\\paraview.exe",
+            "C:\\Program Files\\ParaView 5.12.0\\bin\\paraview.exe",
+            "C:\\Program Files\\ParaView 5.11.0\\bin\\paraview.exe",
+            "C:\\Program Files\\ParaView 5.10.0\\bin\\paraview.exe",
+        };
+        for (int i = 0; i < 5 && !launched; i++)
+        {
+            if (_access(pv_paths[i], 0) == 0)
+            {
+                sprintf(cmd_pv, "\"%s\" --script=auxiliary\\plot_results.py resultado.vtk",
+                    pv_paths[i]);
+                system(cmd_pv);
+                launched = 1;
+            }
+        }
+
         if (launched)
             printf("ParaView iniciado.\n");
         else
-            printf("ParaView nao encontrado.\n"
-                   "  Instale em C:\\Program Files\\ParaView\\\n"
-                   "  Ou adicione ao PATH e recompila.\n");
+            printf("ParaView nao encontrado.\n  Instale em C:\\Program Files\\ParaView\\\n"
+                   "  Ou abra manualmente:\n"
+                   "    paraview resultado.vtk\n");
     }
 
     /* 13. Cleanup */

@@ -1,5 +1,6 @@
 #include "assembly.h"
 #include "element_routine.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -151,7 +152,7 @@ void assemble_global_stiffness_sparse(
 					//Percorre os graus de liberdade de cada nó "b" do elemento "e"
                     for (int j = 0; j < dof_per_node; j++)
                     {
-						//Calcula o indice global "gj" correspondente ao grau de liberdade "j" do no "b" do elemento "e"
+                        //Calcula o indice global "gj" correspondente ao grau de liberdade "j" do no "b" do elemento "e"
                         int gj = conn_e[b] * dof_per_node + j;
                         double val = Ke[(a * dof_per_node + i) * ndof_e +
                                         (b * dof_per_node + j)];
@@ -192,7 +193,7 @@ void assemble_global_stiffness_sparse(
        Ordena as colunas de cada linha em ordem crescente. A insercao
        acima segue a ordem de varredura dos elementos/nos locais, nao a
        ordem das colunas globais - solvers diretos como o PARDISO exigem
-       indices de coluna ordenados por linha no formato CSR 
+       indices de coluna ordenados por linha no formato CSR
        --------------------------------------------------------------- */
     for (int i = 0; i < n; i++)
     {

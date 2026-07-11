@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <string.h>
 
 void mesh_init(Mesh* mesh)
 {
@@ -16,6 +17,9 @@ void mesh_init(Mesh* mesh)
 
     mesh->coords = NULL;
     mesh->connectivity = NULL;
+
+    mesh->n_groups = 0;
+    mesh->groups = NULL;
 }
 
 void mesh_allocate(Mesh* mesh)
@@ -46,6 +50,30 @@ void mesh_free(Mesh* mesh)
 
     mesh->coords = NULL;
     mesh->connectivity = NULL;
+
+    mesh_free_groups(mesh);
+}
+
+void mesh_free_groups(Mesh* mesh)
+{
+    for (int i = 0; i < mesh->n_groups; i++)
+        free(mesh->groups[i].node_ids);
+
+    free(mesh->groups);
+    mesh->groups = NULL;
+    mesh->n_groups = 0;
+}
+
+//Função que procura o grupo de nós pelo nome e retorna um ponteiro para ele, ou NULL se não encontrado. É usada para aplicar condições de contorno por nome, em vez de selecionar nós por coordenada.
+//MeshGroup é um tipo criado na struct MeshGroup, que contém o nome do grupo, o número de nós e um ponteiro para os IDs dos nós
+//groups[] é lido e criado na função read_groups_block() do arquivo unv_reader.c, durante a leitura do arquivo UNV
+MeshGroup* mesh_find_group(Mesh* mesh, const char* name)
+{
+    for (int i = 0; i < mesh->n_groups; i++)
+        if (strcmp(mesh->groups[i].name, name) == 0)
+            return &mesh->groups[i];
+
+    return NULL;
 }
 
 void mesh_print_info(const Mesh* mesh)
@@ -64,4 +92,8 @@ void mesh_print_info(const Mesh* mesh)
     printf("DOF per node: %d\n", mesh->dof_per_node);
 
     printf("Total DOFs: %d\n", mesh->total_dofs);
+
+    printf("Groups: %d\n", mesh->n_groups);
+    for (int i = 0; i < mesh->n_groups; i++)
+        printf("  - %s (%d nos)\n", mesh->groups[i].name, mesh->groups[i].n_nodes);
 }

@@ -25,10 +25,13 @@
     <ClInclude Include="include\elements.h" />
     <ClInclude Include="include\element_routine.h" />
     <ClInclude Include="include\inp_reader.h" />
+    <ClInclude Include="include\io_plots.h" />
     <ClInclude Include="include\mesh.h" />
+    <ClInclude Include="include\out_writter.h" />
     <ClInclude Include="include\quad4.h" />
     <ClInclude Include="include\simp_input.h" />
     <ClInclude Include="include\solver.h" />
+    <ClInclude Include="include\unv_reader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\assembly.c" />
@@ -36,11 +39,14 @@
     <ClCompile Include="src\elasticity_2D_plane_stress.c" />
     <ClCompile Include="src\element_routine.c" />
     <ClCompile Include="src\inp_reader.c" />
+    <ClCompile Include="src\io_plots.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\mesh.c" />
+    <ClCompile Include="src\out_writter.c" />
     <ClCompile Include="src\quad4.c" />
     <ClCompile Include="src\simp_input.c" />
     <ClCompile Include="src\solver.c" />
+    <ClCompile Include="src\unv_reader.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
@@ -134,12 +140,25 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\IHR_LB4129\source\repos\FEM_LIB\FEM_LIB\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\IHR_LB4129\source\repos\FEM_LIB\FEM_LIB\include;C:\Program Files (x86)\Intel\oneAPI\mkl\latest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Program Files (x86)\Intel\oneAPI\mkl\latest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mkl_rt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_rt.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_core.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_intel_thread.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_sequential.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_def.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_avx2.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_avx512.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_mc3.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\compiler\latest\bin\libiomp5md.dll" "$(OutDir)" &gt; nul</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -150,12 +169,25 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\IHR_LB4129\source\repos\FEM_LIB\FEM_LIB\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\IHR_LB4129\source\repos\FEM_LIB\FEM_LIB\include;C:\Program Files (x86)\Intel\oneAPI\mkl\latest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Program Files (x86)\Intel\oneAPI\mkl\latest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mkl_rt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_rt.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_core.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_intel_thread.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_sequential.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_def.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_avx2.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_avx512.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\mkl\latest\bin\mkl_mc3.2.dll" "$(OutDir)" &gt; nul
+copy /Y "C:\Program Files (x86)\Intel\oneAPI\compiler\latest\bin\libiomp5md.dll" "$(OutDir)" &gt; nul</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

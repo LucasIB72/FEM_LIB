@@ -2,217 +2,262 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <direct.h>   /* _getcwd */
 #include "mesh.h"
 #include "elements.h"
 #include "quad4.h"
 #include "elasticity_2D_plane_stress.h"
 #include "assembly.h"
-#include "simp_input.h"
+#include "unv_reader.h"
 #include "bc.h"
 #include "solver.h"
+#include "out_writter.h"
+#include "io_plots.h"
 
-static void write_vtk(const char* filename, Mesh* mesh, double* u)
-{
-    FILE* fp = fopen(filename, "w");
-    if (!fp) return;
+/* Tipos de solver disponiveis para a secao de configuracao, dentro de main() */
+typedef enum { SOLVER_DENSE, SOLVER_SPARSE } SolverType;
 
-    fprintf(fp, "# vtk DataFile Version 3.0\nFEM_LIB\nASCII\nDATASET UNSTRUCTURED_GRID\n");
-    fprintf(fp, "POINTS %d double\n", mesh->n_nodes);
-    for (int i = 0; i < mesh->n_nodes; i++)
-        fprintf(fp, "%e %e %e\n", mesh->coords[i * 3], mesh->coords[i * 3 + 1], mesh->coords[i * 3 + 2]);
+/* Especificacao de uma condicao de contorno de deslocamento: aplica "value"
+   no grau de liberdade "dof" (0 = x, 1 = y) de todos os nos do grupo
+   "group_name" (grupo definido no pre-processador, ex: SALOME). */
+typedef struct { const char* group_name; int dof; double value; } DisplacementBCSpec;
 
-    fprintf(fp, "CELLS %d %d\n", mesh->n_elements, mesh->n_elements * (mesh->nodes_per_element + 1));
-    for (int e = 0; e < mesh->n_elements; e++)
-    {
-        fprintf(fp, "%d", mesh->nodes_per_element);
-        for (int j = 0; j < mesh->nodes_per_element; j++)
-            fprintf(fp, " %d", mesh->connectivity[e * mesh->nodes_per_element + j]);
-        fprintf(fp, "\n");
-    }
-
-    fprintf(fp, "CELL_TYPES %d\n", mesh->n_elements);
-    for (int e = 0; e < mesh->n_elements; e++)
-        fprintf(fp, "%d\n", mesh->nodes_per_element == 4 ? 9 : 5);
-
-    if (u)
-    {
-        fprintf(fp, "POINT_DATA %d\n", mesh->n_nodes);
-        fprintf(fp, "VECTORS displacement double\n");
-        for (int i = 0; i < mesh->n_nodes; i++)
-            fprintf(fp, "%e %e 0.0\n", u[i * 2], u[i * 2 + 1]);
-    }
-
-    fclose(fp);
-}
+/* Especificacao de uma condicao de contorno de forca: distribui
+   "total_force" igualmente entre os nos do grupo "group_name", no grau de
+   liberdade "dof" (0 = x, 1 = y). */
+typedef struct { const char* group_name; int dof; double total_force; } ForceBCSpec;
 
 int main(void)
 {
-    printf("=== FEM_LIB: malha 2D quad4 ===\n\n");
+    /* ================================================================
+       SECAO DE CONFIGURACAO
+       ================================================================ */
 
-    double L_x = 1.0, L_y = 1.0, elem_size = 0.1;
+    /* Malha de entrada: arquivo UNV (I-DEAS Universal File) exportado do
+       SALOME */
+    const char* unv_filename = "C:/Users/lucas/Downloads/Mesh_1.unv";
 
-    /* 1. Malha */
-    Mesh mesh;
-    mesh_init(&mesh);
-    if (generate_rect_mesh_to_mesh(L_x, L_y, elem_size, &mesh) != 0)
-    {
-        printf("Erro ao gerar a malha.\n");
-        return 1;
-    }
-    mesh_print_info(&mesh);
+    /* Solver usado para resolver o sistema global: SOLVER_DENSE (LAPACK
+       dsysv) ou SOLVER_SPARSE (MKL PARDISO, direto e paralelo). */
+    SolverType solver_type = SOLVER_SPARSE;
 
-    /* 2. Elemento */
+    /* Elemento */
     ElementType etype = create_quad4_element();
 
-    /* 3. Fisica (plane stress) */
+    /* Fisica */
     PhysicsModel physics;
     physics.dof_per_node = 2;
     physics.integrate = elasticity_2d_plane_stress_integrate;
 
-    /* 4. Propriedades do material */
-    double material_properties[2] = { 200e9, 0.3 };
+    /* Propriedades do material (estado plano de tensoes) */
+    double E = 200e9;
+    double nu = 0.3;
+    double material_properties[2] = { E, nu };
 
-    /* 5. Alocacao dos sistemas globais */
-    int n = mesh.total_dofs;
-    double* K_global = calloc(n * n, sizeof(double));
-    double* R_global = calloc(n, sizeof(double));
+    /* Condicoes de contorno de deslocamento, por grupo de nos.
+       Os nomes de grupo devem existir na malha UNV (definidos no SALOME). */
+    DisplacementBCSpec disp_bc_specs[] = {
+        { "BC", 0, 0.0E0 },
+        { "BC", 1, 0.0E0 },
+    };
+    int n_disp_bc_specs = (int)(sizeof(disp_bc_specs) / sizeof(disp_bc_specs[0]));
 
-    if (!K_global || !R_global)
+    /* Condicoes de contorno de forca, por grupo de nos. */
+    ForceBCSpec force_bc_specs[] = {
+        { "FORCE", 1, 1.0E4 },
+    };
+    int n_force_bc_specs = (int)(sizeof(force_bc_specs) / sizeof(force_bc_specs[0]));
+
+    /* ================================================================ */
+
+    printf("=== FEM_LIB: malha 2D quad4 (UNV) ===\n\n");
+
+    /* 1. Malha */
+    Mesh mesh;
+    mesh_init(&mesh);
+    if (read_unv_mesh(unv_filename, &mesh) != 0)
     {
-        printf("Falha ao alocar matrizes globais.\n");
-        free(K_global); free(R_global);
-        mesh_free(&mesh);
+        printf("Erro ao ler a malha UNV (%s).\n", unv_filename);
         return 1;
     }
+    mesh_print_info(&mesh);
 
-    /* 6. Montagem */
-    assemble_global_stiffness(K_global, R_global, &mesh, &etype, &physics, material_properties, NULL);
+    /* Exporta a malha (sem resultados) para visualizacao imediata */
+    write_vtk("malha.vtk", &mesh, NULL);
+    printf("Malha exportada para malha.vtk\n");
 
-    printf("\n--- Aplicacao das condicoes de contorno ---\n");
+    int n = mesh.total_dofs;
 
-    /* 7. Condicoes de contorno de deslocamento (aresta esquerda: x = 0) */
-    int* bc_dofs = malloc(mesh.n_nodes * 2 * sizeof(int));
-    double* bc_vals = malloc(mesh.n_nodes * 2 * sizeof(double));
+    printf("\n--- Aplicacao das condicoes de contorno (por grupo) ---\n");
+
+    /* Condicoes de contorno de deslocamento */
     int bc_count = 0;
-
-    for (int i = 0; i < mesh.n_nodes; i++)
+    for (int s = 0; s < n_disp_bc_specs; s++)
     {
-        if (fabs(mesh.coords[i * 3]) < 1e-12)
+        MeshGroup* g = mesh_find_group(&mesh, disp_bc_specs[s].group_name);
+        if (!g)
         {
-            bc_dofs[bc_count] = i * 2;
-            bc_vals[bc_count] = 0.0;
-            bc_count++;
-            bc_dofs[bc_count] = i * 2 + 1;
-            bc_vals[bc_count] = 0.0;
-            bc_count++;
+            printf("Aviso: grupo de deslocamento \"%s\" nao encontrado na malha.\n",
+                disp_bc_specs[s].group_name);
+            continue;
         }
+        //Conta o numero de nos totais com condicoes de contorno de deslocamento
+        bc_count += g->n_nodes;
     }
 
-    DisplacementBC disp_bc = { .n_dofs = bc_count, .dof = bc_dofs, .value = bc_vals };
-    apply_displacement_bc_dense(K_global, R_global, n, &disp_bc);
-    printf("Deslocamento: %d graus de liberdade prescritos (x = 0).\n", bc_count);
+    int* bc_dofs = malloc(bc_count * sizeof(int));
+    double* bc_vals = malloc(bc_count * sizeof(double));
+    int bc_idx = 0;
 
-    /* 8. Condicoes de contorno de forca (aresta superior: y = L_y) */
-    int n_bc_f = 0;
-    for (int i = 0; i < mesh.n_nodes; i++)
-        if (fabs(mesh.coords[i * 3 + 1] - L_y) < 1e-12)
-            n_bc_f++;
+    for (int s = 0; s < n_disp_bc_specs; s++)
+    {
+        MeshGroup* g = mesh_find_group(&mesh, disp_bc_specs[s].group_name);
+        if (!g) continue;
 
-    int* fc_dofs = malloc(n_bc_f * sizeof(int));
-    double* fc_vals = malloc(n_bc_f * sizeof(double));
-    double F_total = 1e6;
+        for (int j = 0; j < g->n_nodes; j++)
+        {
+            //Determina dof global do no "j" do grupo "g" 
+            bc_dofs[bc_idx] = g->node_ids[j] * physics.dof_per_node + disp_bc_specs[s].dof;
+			//Define o valor do deslocamento prescrito para este dof global
+            bc_vals[bc_idx] = disp_bc_specs[s].value;
+            bc_idx++;
+        }
+        printf("Deslocamento: grupo \"%s\", dof %d = %e (%d nos).\n",
+            disp_bc_specs[s].group_name, disp_bc_specs[s].dof,
+            disp_bc_specs[s].value, g->n_nodes);
+    }
+	//Cria a variavel disp_bc do tipo DisplacementBC, que armazena o numero de dofs, os indices dos dofs e os valores dos deslocamentos prescritos para ser usado nas rotinas de aplicavao de BC
+    DisplacementBC disp_bc = { .n_dofs = bc_idx, .dof = bc_dofs, .value = bc_vals };
+
+    /* Condicoes de contorno de forca */
     int fc_count = 0;
-
-    for (int i = 0; i < mesh.n_nodes; i++)
+    for (int s = 0; s < n_force_bc_specs; s++)
     {
-        if (fabs(mesh.coords[i * 3 + 1] - L_y) < 1e-12)
+        MeshGroup* g = mesh_find_group(&mesh, force_bc_specs[s].group_name);
+        if (!g)
         {
-            fc_dofs[fc_count] = i * 2 + 1;
-            fc_vals[fc_count] = F_total / n_bc_f;
-            fc_count++;
+            printf("Aviso: grupo de forca \"%s\" nao encontrado na malha.\n",
+                force_bc_specs[s].group_name);
+            continue;
         }
+        fc_count += g->n_nodes;
     }
 
-    ForceBC force_bc = { .n_dofs = n_bc_f, .dof = fc_dofs, .value = fc_vals };
-    apply_force_bc(R_global, &force_bc);
-    printf("Forca: %d nos com carga vertical total de %.2e N.\n", n_bc_f, F_total);
+    int* fc_dofs = malloc(fc_count * sizeof(int));
+    double* fc_vals = malloc(fc_count * sizeof(double));
+    int fc_idx = 0;
 
-    /* 9. Solucao do sistema denso */
-    printf("\n--- Solucao (dense LU) ---\n");
+    for (int s = 0; s < n_force_bc_specs; s++)
+    {
+        MeshGroup* g = mesh_find_group(&mesh, force_bc_specs[s].group_name);
+        if (!g) continue;
+
+        double per_node = force_bc_specs[s].total_force / g->n_nodes;
+        for (int j = 0; j < g->n_nodes; j++)
+        {
+            fc_dofs[fc_idx] = g->node_ids[j] * physics.dof_per_node + force_bc_specs[s].dof;
+            fc_vals[fc_idx] = per_node;
+            fc_idx++;
+        }
+        printf("Forca: grupo \"%s\", dof %d, total %.2e N (%d nos).\n",
+            force_bc_specs[s].group_name, force_bc_specs[s].dof,
+            force_bc_specs[s].total_force, g->n_nodes);
+    }
+
+    ForceBC force_bc = { .n_dofs = fc_idx, .dof = fc_dofs, .value = fc_vals };
+
+    /* Montagem e solucao do sistema global, de acordo com o solver escolhido */
+    double* K_global = NULL;
+    double* R_global = NULL;
+    int* rowIndex = NULL, * columns = NULL;
+    double* values = NULL;
+    int nnz = 0;
+
     double* u = calloc(n, sizeof(double));
-    double* K_copy = malloc(n * n * sizeof(double));
-    memcpy(K_copy, K_global, n * n * sizeof(double));
 
-    dsolve_sym(n, 1, K_copy, R_global);
-    memcpy(u, R_global, n * sizeof(double));
-    free(K_copy);
+    if (solver_type == SOLVER_DENSE)
+    {
+        printf("\n--- Solucao (LAPACK dsysv, denso) ---\n");
+
+        K_global = calloc(n * n, sizeof(double));
+        R_global = calloc(n, sizeof(double));
+
+        assemble_global_stiffness(K_global, R_global, &mesh, &etype, &physics, material_properties, NULL);
+        apply_displacement_bc_dense(K_global, R_global, n, &disp_bc);
+        apply_force_bc(R_global, &force_bc);
+
+        dsolve_sym(n, 1, K_global, R_global);
+        memcpy(u, R_global, n * sizeof(double));
+    }
+    else /* SOLVER_SPARSE */
+    {
+        printf("\n--- Solucao (MKL PARDISO, esparso) ---\n");
+
+        R_global = calloc(n, sizeof(double));
+        apply_force_bc(R_global, &force_bc);
+
+        assemble_global_stiffness_sparse(&rowIndex, &columns, &values, &nnz,
+            &mesh, &etype, &physics, material_properties);
+        apply_displacement_bc_csr(rowIndex, columns, values, R_global, n, &disp_bc);
+
+        int error = solve_csr_pardiso(n, rowIndex, columns, values, R_global, u, 1);
+
+        if (error == 0)
+            printf("PARDISO: solucao obtida com sucesso.\n");
+        else
+            printf("PARDISO: falha na solucao (codigo de erro = %d).\n", error);
+    }
 
     printf("u[0] (no 0, x) = %e\n", u[0]);
     printf("u[1] (no 0, y) = %e\n", u[1]);
     printf("u[%d] (top-right, y) = %e\n", n - 1, u[n - 1]);
 
-    /* 10. Solucao do sistema esparso com CG */
-    printf("\n--- Solucao (sparse CG) ---\n");
-
-    int* rowIndex = NULL, *columns = NULL;
-    double* values = NULL;
-    int nnz = 0;
-
-    double* F_sparse = calloc(n, sizeof(double));
-    double* K_sparse = calloc(n * n, sizeof(double));
-
-    assemble_global_stiffness(K_sparse, F_sparse, &mesh, &etype, &physics, material_properties, NULL);
-    apply_displacement_bc_dense(K_sparse, F_sparse, n, &disp_bc);
-    apply_force_bc(F_sparse, &force_bc);
-
-    assemble_global_stiffness_sparse(&rowIndex, &columns, &values, &nnz,
-        &mesh, &etype, &physics, material_properties);
-    apply_displacement_bc_csr(rowIndex, columns, values, F_sparse, n, &disp_bc);
-
-    double* u_cg = calloc(n, sizeof(double));
-    int iter = solve_csr_cg(n, rowIndex, columns, values, F_sparse, u_cg, 2000, 1e-12);
-
-    if (iter >= 0)
-        printf("CG convergiu em %d iteracoes.\n", iter);
-    else
-        printf("CG nao convergiu.\n");
-
-    printf("u_cg[0] (no 0, x) = %e\n", u_cg[0]);
-    printf("u_cg[1] (no 0, y) = %e\n", u_cg[1]);
-    printf("u_cg[%d] (top-right, y) = %e\n", n - 1, u_cg[n - 1]);
-
-    printf("\nDiferenca max LU vs CG: %e\n",
-        fabs(u[n - 1] - u_cg[n - 1]));
-
-    /* 11. Exportacao VTK */
+    /* 7. Exportacao VTK (resultados com deslocamento) */
     write_vtk("resultado.vtk", &mesh, u);
     printf("\nResultado exportado para resultado.vtk\n");
 
-    /* 12. Abre ParaView automaticamente */
+    /* 8. Fator de escala do Warp: amplifica a deformada para ~10% do dominio.
+       O tamanho do dominio e estimado pela caixa delimitadora (bounding box)
+       da malha, ja que ela agora vem de um arquivo externo (UNV). */
+    double min_x = mesh.coords[0], max_x = mesh.coords[0];
+    double min_y = mesh.coords[1], max_y = mesh.coords[1];
+    for (int i = 1; i < mesh.n_nodes; i++)
     {
-        const char* cmds[] = {
-            "where paraview >nul 2>nul && start /B paraview resultado.vtk",
-            "if exist \"C:\\Program Files\\ParaView\\bin\\paraview.exe\" start /B \"\" \"C:\\Program Files\\ParaView\\bin\\paraview\" resultado.vtk",
-            "if exist \"C:\\Program Files\\ParaView 5.11.0\\bin\\paraview.exe\" start /B \"\" \"C:\\Program Files\\ParaView 5.11.0\\bin\\paraview\" resultado.vtk",
-            "if exist \"C:\\Program Files\\ParaView 5.10.0\\bin\\paraview.exe\" start /B \"\" \"C:\\Program Files\\ParaView 5.10.0\\bin\\paraview\" resultado.vtk",
-        };
-        int launched = 0;
-        for (int i = 0; i < 4 && !launched; i++)
-            if (system(cmds[i]) == 0) launched = 1;
-        if (launched)
-            printf("ParaView iniciado.\n");
-        else
-            printf("ParaView nao encontrado.\n"
-                   "  Instale em C:\\Program Files\\ParaView\\\n"
-                   "  Ou adicione ao PATH e recompila.\n");
+        double x = mesh.coords[i * 3], y = mesh.coords[i * 3 + 1];
+        if (x < min_x) min_x = x;
+        if (x > max_x) max_x = x;
+        if (y < min_y) min_y = y;
+        if (y > max_y) max_y = y;
     }
+    double domain_size = fmin(max_x - min_x, max_y - min_y);
+    double warp_scale = compute_warp_scale(&mesh, u, domain_size);
 
-    /* 13. Cleanup */
+    /* 9. Gera o script do ParaView com caminhos absolutos */
+    char cwd[512];
+    if (!_getcwd(cwd, sizeof(cwd)))
+        cwd[0] = '\0';
+
+    char mesh_path[600], result_path[600], script_path[600], script_arg[640];
+    snprintf(mesh_path, sizeof(mesh_path), "%s\\malha.vtk", cwd);
+    snprintf(result_path, sizeof(result_path), "%s\\resultado.vtk", cwd);
+    snprintf(script_path, sizeof(script_path), "%s\\view.py", cwd);
+
+    write_paraview_script(script_path, mesh_path, result_path, warp_scale);
+    snprintf(script_arg, sizeof(script_arg), "--script=\"%s\"", script_path);
+
+    /* 10. Abre o ParaView ja com a visualizacao montada */
+    if (open_in_paraview(script_arg))
+        printf("ParaView iniciado (deformada + malha + arestas dos elementos).\n");
+    else
+        printf("ParaView nao encontrado.\n"
+               "  Instale em C:\\Program Files\\ParaView\\\n"
+               "  Ou adicione paraview ao PATH e recompila.\n");
+
+    /* 11. Cleanup */
     free(bc_dofs); free(bc_vals);
     free(fc_dofs); free(fc_vals);
-    free(u); free(u_cg);
+    free(u);
     free(K_global); free(R_global);
-    free(K_sparse); free(F_sparse);
     free(rowIndex); free(columns); free(values);
     mesh_free(&mesh);
 

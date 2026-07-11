@@ -42,6 +42,15 @@
     <ClInclude Include="include\inp_reader.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
+    <ClInclude Include="include\unv_reader.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="include\out_writter.h">
+      <Filter>Arquivos de Cabeçalho\io_functions</Filter>
+    </ClInclude>
+    <ClInclude Include="include\io_plots.h">
+      <Filter>Arquivos de Cabeçalho\io_functions</Filter>
+    </ClInclude>
     <ClInclude Include="include\mesh.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
@@ -69,6 +78,15 @@
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="src\inp_reader.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\unv_reader.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\out_writter.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\io_plots.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
     <ClCompile Include="src\main.c">
